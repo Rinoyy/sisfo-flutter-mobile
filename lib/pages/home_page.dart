@@ -131,52 +131,54 @@ class _HomePageState extends State<HomePage> {
                                 );
                               },
                               child: Card(
-                                elevation: 4,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    color: Colors.white,
                                   ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
+                                  child:  Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
-                                        child: Image.asset(
-                                          'assets/images/tb.png',
-                                          height: 100,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                        ),
+                                        color: Colors.white,
                                       ),
-                                      Text(
-                                        item.codeUnit,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            child: Image.asset(
+                                              'assets/images/tb.png',
+                                              height: 90,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          Text(
+                                            item.item.name,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          Text(
+                                            item.codeUnit,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          Text(
+                                            item.statusBorrowing
+                                                ? 'Dipinjam'
+                                                : 'Tersedia',
+                                            style: const TextStyle(
+                                                color: Colors.grey),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        item.itemsId.toString(),
-                                        style:
-                                            const TextStyle(color: Colors.grey),
-                                      ),
-                                      Text(
-                                        item.statusBorrowing
-                                            ? 'Dipinjam'
-                                            : 'Tersedia',
-                                        style:
-                                            const TextStyle(color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ));
+                                    ),
+                                  ));
                         },
                       ),
                     ));

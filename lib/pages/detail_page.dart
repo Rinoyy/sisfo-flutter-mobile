@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/item_unit.dart';
+import '../pages/peminjaman_page.dart';
+import '../pages/peminjaman_page.dart';
 
 class DetailPage extends StatelessWidget {
   final ItemUnit itemUnit;
@@ -24,7 +26,7 @@ class DetailPage extends StatelessWidget {
                       child: Image.asset(
                         'assets/images/tb.png',
                         height: 180,
-                        width: 370,
+                        width: 350,
                         fit: BoxFit.cover,
                       ),
                     )
@@ -61,7 +63,7 @@ class DetailPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Elektronik',
+                         Text('${itemUnit.category.name}',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         Container(
                           child: Center(
@@ -105,7 +107,11 @@ class DetailPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                // Aksi pinjam
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            PeminjamanPage(itemUnit: itemUnit)));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF4488B7),
@@ -118,7 +124,89 @@ class DetailPage extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  builder: (context) {
+                    return Container(
+                        padding: const EdgeInsets.all(16),
+                        width: 400,
+                        height: 400,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              children: [
+                                SizedBox(width: 20),
+                                Image.asset(
+                                  'assets/images/tb.png',
+                                  width: 150,
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('${itemUnit.item.name}'),
+                                      Text("IN-001"),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            const Divider(),
+                            
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                PeminjamanPage(
+                                                    itemUnit: itemUnit)));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF4488B7),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  child: const Text('Pinjam barang'),
+                                ),
+                                OutlinedButton(
+                                  onPressed: () {},
+                                  style: OutlinedButton.styleFrom(
+                                    side: const BorderSide(
+                                        color: Color(0xFF4488B7)),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Tambah keranjang',
+                                    style: TextStyle(color: Color(0xFF4488B7)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ));
+                  },
+                );
+              },
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(150, 50),
                 side: const BorderSide(color: Color(0xFF4488B7)),
