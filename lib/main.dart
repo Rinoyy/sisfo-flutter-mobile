@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './pages/home_page.dart';
 import './pages/status_page.dart';
 import './pages/akun_page.dart';
+import './pages/pengembalian.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,9 +11,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false, 
-      home: MainPage());
+    return MaterialApp(debugShowCheckedModeBanner: false, home: MainPage());
   }
 }
 
@@ -27,33 +26,28 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _pages = [
     const HomePage(),
     const StatusPage(),
-    const AkunPage(),
+    const PengembalianPage(),
+    const AkunPage()
   ];
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index){
+        onTap: (index) {
           setState(() {
-            _currentIndex  = index;
+            _currentIndex = index;
           });
         },
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home'
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Status'
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Home'
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Status'),
+          BottomNavigationBarItem(icon: Icon(Icons.label), label: 'Pengembalian'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Akun'),
         ],
       ),
     );

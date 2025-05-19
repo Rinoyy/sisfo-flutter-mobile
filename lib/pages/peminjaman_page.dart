@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class PeminjamanPage extends StatefulWidget {
-  final itemUnit;
+  final dynamic itemUnit;
   const PeminjamanPage({Key? key, required this.itemUnit}) : super(key: key);
 
   @override
@@ -17,10 +17,26 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
   final _timeController = TextEditingController();
   final _idBarangController = TextEditingController();
 
+  List<int> _itemsId = [];
+
   @override
   void initState() {
     super.initState();
-    _idBarangController.text = widget.itemUnit.id.toString();
+
+    if (widget.itemUnit is List) {
+      _itemsId = (widget.itemUnit as List)
+          .where((item) => item != null && item['id'] != null) 
+          .map((item) => item['id'] as int)
+          .toList();
+    } else {
+      if (widget.itemUnit != null && widget.itemUnit['id'] != null) {
+        _itemsId = [widget.itemUnit['id'] as int];
+      } else {
+        _itemsId = [];
+      }
+    }
+
+    _idBarangController.text = _itemsId.join(', ');
   }
 
   Future<void> _pickDate() async {
@@ -51,14 +67,13 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
     final reason = _reasonController.text;
     final tanggal = _dateController.text;
     final jam = _timeController.text;
-    final barang = _idBarangController.text;
 
     final body = {
       "jam": jam,
       "return_date": tanggal,
       "reason": reason,
       "status": "PENGAJUAN",
-      "items_id": [_idBarangController.text],
+      "items_id": _itemsId,
       "id_user": 1
     };
 
@@ -79,10 +94,6 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
           SnackBar(content: Text('Gagal: ${response.body}')),
         );
       }
-
-
-
-      
     } catch (e) {
       print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -93,62 +104,78 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isList = widget.itemUnit is List;
+
     return Scaffold(
-      appBar: AppBar(title: Text("Form Peminjaman")),
+      appBar: AppBar(title: Text("Checkout")),
       body: Padding(
-          padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Image.asset(
-                      'assets/images/tb.png',
-                      width: 150,
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                        child: Column(
+              // Tampilkan barang
+              isList
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: (widget.itemUnit as List).length,
+                      itemBuilder: (context, index) {
+                        final item = (widget.itemUnit as List)[index];
+                        print(item);
+                        return ListTile(
+                          title: Text(item['name'] ?? 'tidak ada'),
+                          subtitle:
+                              Text(item['kategori'] ?? 'tidak ada'),
+                          trailing: Text(item['codeUnit'] ?? 'Tidak ada nama'),
+                        );
+                      },
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Image.asset(
+                          'assets/images/tb.png',
+                          width: 150,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '${widget.itemUnit.item.name}',
-                              ),
-                              Container(
-                                child: Center(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Container(
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                      '${widget.itemUnit['item']?['name'] ?? 'tidak ada'}'),
+                                  Container(
+                                    decoration: BoxDecoration(
                                       color: Color(0x484488B7),
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 4),
-                                      child: Text(
-                                        '${widget.itemUnit.codeUnit}',
-                                        style: TextStyle(
-                                            color: Color(0xFF4488B7),
-                                            fontSize: 15),
-                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 4),
+                                    child: Text(
+                                      '${widget.itemUnit['kategori'] ?? 'tidak ada'}',
+                                      style: TextStyle(
+                                          color: Color(0xFF4488B7),
+                                          fontSize: 15),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
+                              Text(
+                                  '${widget.itemUnit['category']['name'] ?? 'tidak ada'}'),
                             ],
                           ),
                         ),
-                        Text(
-                          '${widget.itemUnit.category.name}',
-                        ),
                       ],
-                    )),
-                  ],
-                ),
-              ),
+                    ),
+
+              SizedBox(height: 20),
+
+              // Form input
               Form(
                 key: _formKey,
                 child: Column(
@@ -169,14 +196,13 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
                       controller: _timeController,
                       readOnly: true,
                       decoration:
-                          InputDecoration(labelText: 'waktu Pengembalian'),
+                          InputDecoration(labelText: 'Waktu Pengembalian'),
                       onTap: _pickTime,
                     ),
                     TextFormField(
                       controller: _idBarangController,
-                      decoration: InputDecoration(labelText: 'barang'),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Wajib diisi' : null,
+                      decoration: InputDecoration(labelText: 'Barang'),
+                      readOnly: true,
                     ),
                     SizedBox(height: 20),
                     ElevatedButton(
@@ -187,7 +213,9 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
                 ),
               ),
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/item_unit.dart';
 import '../pages/peminjaman_page.dart';
 import '../pages/peminjaman_page.dart';
+import '../pages/keranjang.dart';
 
 class DetailPage extends StatelessWidget {
   final ItemUnit itemUnit;
@@ -63,7 +64,7 @@ class DetailPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                         Text('${itemUnit.category.name}',
+                        Text('${itemUnit.category.name}',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         Container(
                           child: Center(
@@ -108,10 +109,19 @@ class DetailPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            PeminjamanPage(itemUnit: itemUnit)));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PeminjamanPage(itemUnit: [
+                      {
+                        'id': itemUnit.id,
+                        'name': 'Halo',
+                        'stock': 10,
+                        'kategori':itemUnit.category.name,
+                        'codeUnit':itemUnit.codeUnit,
+                      }
+                    ]),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF4488B7),
@@ -161,7 +171,6 @@ class DetailPage extends StatelessWidget {
                             ),
                             const Spacer(),
                             const Divider(),
-                            
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -185,21 +194,17 @@ class DetailPage extends StatelessWidget {
                                   child: const Text('Pinjam barang'),
                                 ),
                                 OutlinedButton(
-                                  onPressed: () {},
-                                  style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(
-                                        color: Color(0xFF4488B7)),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                    onPressed: () {},
+                                    style: OutlinedButton.styleFrom(
+                                      side: const BorderSide(
+                                          color: Color(0xFF4488B7)),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
                                     ),
-                                  ),
-                                  child: const Text(
-                                    'Tambah keranjang',
-                                    style: TextStyle(color: Color(0xFF4488B7)),
-                                  ),
-                                ),
+                                    child: Text("tambah keranjang"))
                               ],
                             ),
                           ],
@@ -214,9 +219,12 @@ class DetailPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                'Tambah keranjang',
-                style: TextStyle(color: Color(0xFF4488B7)),
+              child: ElevatedButton(
+                child: Text("tambah keranjang"),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => KeranjangPage()));
+                },
               ),
             )
           ],

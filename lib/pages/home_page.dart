@@ -18,14 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<String> name = <String>[
-    'infocus',
-    'hdmi',
-    'celana',
-    'baju',
-    'Celana',
-    'Seragam'
-  ];
+
   final ApiService apiService = ApiService();
 
   @override

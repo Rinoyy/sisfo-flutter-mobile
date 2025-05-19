@@ -5,7 +5,7 @@ import '../models/item_unit.dart';
 class ApiService {
   Future<List<ItemUnit>> fetchItemUnits() async {
     // final response =
-    //   await http.get(Uri.parse('http://10.0.2.2:5000/api/itemsUnit'));
+    // await http.get(Uri.parse('http://10.0.2.2:5000/api/itemsUnit'));
   final response = await http.get(Uri.parse('http://localhost:5000/api/itemsUnit'));
 
     if (response.statusCode == 200) {
