@@ -17,6 +17,7 @@ class ItemDetail {
     );
   }
 }
+
 class ItemCategory {
   final int id;
   final String name;
@@ -33,7 +34,6 @@ class ItemCategory {
     );
   }
 }
-
 
 class ItemUnit {
   final int id;
@@ -64,8 +64,31 @@ class ItemUnit {
       locationId: json['location_id'],
       idCategory: json['id_category'],
       statusBorrowing: json['status_borrowing'],
-      item: ItemDetail.fromJson(json['Item']),
+      item: ItemDetail.fromJson(json['item']),
       category: ItemCategory.fromJson(json['category']),
+    );
+  }
+}
+
+// Ini adalah pembungkus respons API
+class ItemUnitResult {
+  final bool success;
+  final String message;
+  final List<ItemUnit> data;
+
+  ItemUnitResult({
+    required this.success,
+    required this.message,
+    required this.data,
+  });
+
+  factory ItemUnitResult.fromJson(Map<String, dynamic> json) {
+    return ItemUnitResult(
+      success: json['success'],
+      message: json['message'],
+      data: (json['data'] as List)
+          .map((itemJson) => ItemUnit.fromJson(itemJson))
+          .toList(),
     );
   }
 }

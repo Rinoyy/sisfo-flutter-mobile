@@ -4,7 +4,9 @@ import '../models/pengembalian.dart';
 
 class ApiService {
   Future<List<Pengembalian>> fetchPengembalian() async {
-    final response = await http.get(Uri.parse('http://localhost:5000/api/FetchLoan'));
+    final response = await http.get(Uri.parse('http://localhost:5000/api/load'));
+    //     final response =
+    // await http.get(Uri.parse('http://10.0.2.2:5000/api/load'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
