@@ -13,6 +13,45 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ApiService apiService = ApiService();
 
+  late Future<List<ItemUnit>> futureItems;
+  List<ItemUnit> allItems = [];
+  List<ItemUnit> displayedItems = [];
+
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    futureItems = apiService.fetchItemUnits();
+
+    futureItems.then((items) {
+      setState(() {
+        allItems = items;
+        displayedItems = allItems;
+      });
+    });
+
+    searchController.addListener(() {
+      filterItems();
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void filterItems() {
+    final query = searchController.text.toLowerCase();
+    setState(() {
+      displayedItems = allItems.where((item) {
+        final name = item.name.toLowerCase();
+        return name.contains(query);
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -21,63 +60,52 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
-
             const SizedBox(height: 16),
             Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF6ED),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(Icons.menu, color: Colors.orange, size: 28),
-                    Icon(Icons.shopping_cart_outlined, color: Colors.orange, size: 28),
-                  ],
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
                 ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.shade200,
-                    borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Icon(Icons.menu, color: Colors.blue, size: 28),
+                      Icon(Icons.shopping_cart_outlined,
+                          color: Colors.blue, size: 28),
+                    ],
                   ),
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.search, color: Colors.white),
-                      hintText: "Search",
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(color: Colors.white70),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                          color: const Color(0xFFDDD9D9), width: 2),
+                    ),
+                    child: TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.search, color: Color(0xFFBCB7B7)),
+                        hintText: "Search",
+                        hintStyle: TextStyle(color: Color(0xFF9C8B8B)),
+                        border: InputBorder.none,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Wrap(
-                spacing: 8,
-                children: const [
-                  FilterChip(
-                    label: Text('Semua'),
-                    onSelected: null,
-                  ),
-                  Chip(label: Text("Alat Tulis")),
-                  Chip(label: Text("Elektronik")),
                 ],
               ),
             ),
+
             const SizedBox(height: 16),
             Expanded(
               child: FutureBuilder<List<ItemUnit>>(
-                future: apiService.fetchItemUnits(),
+                future: futureItems,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -86,12 +114,14 @@ class _HomePageState extends State<HomePage> {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
 
-                  final items = snapshot.data!;
+                  if (displayedItems.isEmpty) {
+                    return const Center(child: Text('Tidak ada data'));
+                  }
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: GridView.builder(
-                      itemCount: items.length,
+                      itemCount: displayedItems.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: screenWidth < 600 ? 2 : 3,
                         mainAxisExtent: 220,
@@ -99,8 +129,7 @@ class _HomePageState extends State<HomePage> {
                         mainAxisSpacing: 12,
                       ),
                       itemBuilder: (context, index) {
-                        final item = items[index];
-
+                        final item = displayedItems[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -136,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    item.item.name,
+                                    item.name,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -144,15 +173,14 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   Text(
                                     item.codeUnit,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    ),
+                                    style: const TextStyle(fontSize: 14),
                                   ),
                                   Text(
                                     item.statusBorrowing
                                         ? 'Dipinjam'
                                         : 'Tersedia',
-                                    style: const TextStyle(color: Colors.grey),
+                                    style:
+                                        const TextStyle(color: Colors.grey),
                                   ),
                                 ],
                               ),
@@ -164,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),

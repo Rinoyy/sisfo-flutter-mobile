@@ -1,39 +1,5 @@
-class ItemDetail {
-  final int id;
-  final String name;
-  final int stock;
-
-  ItemDetail({
-    required this.id,
-    required this.name,
-    required this.stock,
-  });
-
-  factory ItemDetail.fromJson(Map<String, dynamic> json) {
-    return ItemDetail(
-      id: json['id'],
-      name: json['name'],
-      stock: json['stock'],
-    );
-  }
-}
-
-class ItemCategory {
-  final int id;
-  final String name;
-
-  ItemCategory({
-    required this.id,
-    required this.name,
-  });
-
-  factory ItemCategory.fromJson(Map<String, dynamic> json) {
-    return ItemCategory(
-      id: json['id'],
-      name: json['name'],
-    );
-  }
-}
+import 'item_detail.dart';
+import 'item_category.dart';
 
 class ItemUnit {
   final int id;
@@ -42,6 +8,7 @@ class ItemUnit {
   final int locationId;
   final int idCategory;
   final bool statusBorrowing;
+  final String name;
   final ItemDetail item;
   final ItemCategory category;
 
@@ -52,6 +19,7 @@ class ItemUnit {
     required this.locationId,
     required this.idCategory,
     required this.statusBorrowing,
+    required this.name,
     required this.item,
     required this.category,
   });
@@ -63,32 +31,26 @@ class ItemUnit {
       codeUnit: json['code_unit'],
       locationId: json['location_id'],
       idCategory: json['id_category'],
+      name: json['name'],
       statusBorrowing: json['status_borrowing'],
+      // Hanya parse item dan category jika ada dalam JSON
       item: ItemDetail.fromJson(json['item']),
       category: ItemCategory.fromJson(json['category']),
     );
   }
-}
 
-// Ini adalah pembungkus respons API
-class ItemUnitResult {
-  final bool success;
-  final String message;
-  final List<ItemUnit> data;
-
-  ItemUnitResult({
-    required this.success,
-    required this.message,
-    required this.data,
-  });
-
-  factory ItemUnitResult.fromJson(Map<String, dynamic> json) {
-    return ItemUnitResult(
-      success: json['success'],
-      message: json['message'],
-      data: (json['data'] as List)
-          .map((itemJson) => ItemUnit.fromJson(itemJson))
-          .toList(),
+  // Factory khusus untuk parsing dari keranjang response
+  factory ItemUnit.fromKeranjangJson(Map<String, dynamic> json) {
+    return ItemUnit(
+      id: json['id'],
+      itemsId: json['items_id'],
+      codeUnit: json['code_unit'],
+      locationId: json['location_id'],
+      idCategory: json['id_category'],
+      name: json['name'],
+      statusBorrowing: json['status_borrowing'],
+      item: ItemDetail.fromJson(json['item']),
+      category: ItemCategory.fromJson(json['category']),
     );
   }
 }

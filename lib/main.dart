@@ -1,23 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import './pages/home_page.dart';
 import './pages/status_page.dart';
 import './pages/akun_page.dart';
 import './pages/pengembalian.dart';
+import './pages/login_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  Future<bool> _isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+    return token != null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: MainPage());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: FutureBuilder<bool>(
+        future: _isLoggedIn(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (snapshot.hasData && snapshot.data == true) {
+            return const MainPage(); // sudah login
+          } else {
+            return const LoginPage(); // belum login
+          }
+        },
+      ),
+    );
   }
 }
 
 class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
   @override
-  _MainPageState createState() => _MainPageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
@@ -27,7 +57,7 @@ class _MainPageState extends State<MainPage> {
     const HomePage(),
     const StatusPage(),
     const PengembalianPage(),
-    const AkunPage()
+    const AkunPage(),
   ];
 
   @override

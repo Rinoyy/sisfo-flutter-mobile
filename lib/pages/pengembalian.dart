@@ -34,8 +34,20 @@ class _PengembalianPageState extends State<PengembalianPage> {
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('Data kosong'));
           }
+          final data = snapshot.data!.where((item) {
+            final status = item.status.trim().toUpperCase();
+            return status == 'DIPINJAM' || status == 'PENGAJUAN_PENGEMBALIAN' || status == 'DIPINJAM';
+          }).toList();
 
-          final data = snapshot.data!;
+          if (data.isEmpty) {
+            return const Center(
+              child: Text(
+                'Tidak ada peminjaman aktif atau pengajuan pengembalian.',
+                style: TextStyle(fontSize: 16),
+              ),
+            );
+          }
+          // final data = snapshot.data!;
 
           return ListView.builder(
             itemCount: data.length,
@@ -61,9 +73,7 @@ class _PengembalianPageState extends State<PengembalianPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('ID User: ${item.idUser}'),
                             Text('Status: ${item.status}'),
-                            Text('Tanggal Pinjam: ${item.loanDate}'),
                             Text('Tanggal Kembali: ${item.returnDate}'),
                           ],
                         ),

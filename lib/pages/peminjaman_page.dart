@@ -25,7 +25,7 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
 
     if (widget.itemUnit is List) {
       _itemsId = (widget.itemUnit as List)
-          .where((item) => item != null && item['id'] != null) 
+          .where((item) => item != null && item['id'] != null)
           .map((item) => item['id'] as int)
           .toList();
     } else {
@@ -107,107 +107,164 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
     final bool isList = widget.itemUnit is List;
 
     return Scaffold(
-      appBar: AppBar(title: Text("Checkout")),
+      appBar: AppBar(title: const Text("Checkout")),
+      // Di dalam build:
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Tampilkan barang
+              const Text(
+                'Detail Barang',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
               isList
                   ? ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: (widget.itemUnit as List).length,
                       itemBuilder: (context, index) {
                         final item = (widget.itemUnit as List)[index];
-                        print(item);
-                        return ListTile(
-                          title: Text(item['name'] ?? 'tidak ada'),
-                          subtitle:
-                              Text(item['kategori'] ?? 'tidak ada'),
-                          trailing: Text(item['codeUnit'] ?? 'Tidak ada nama'),
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          child: ListTile(
+                            title: Text(item['name'] ?? 'tidak ada'),
+                            subtitle: Text(item['kategori'] ?? 'tidak ada'),
+                            trailing: Text(item['codeUnit'] ?? '-'),
+                          ),
                         );
                       },
                     )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.asset(
-                          'assets/images/tb.png',
-                          width: 150,
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                  : Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.asset('assets/images/tb.png', width: 100),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      '${widget.itemUnit['item']?['name'] ?? 'tidak ada'}'),
+                                    widget.itemUnit['item']?['name'] ??
+                                        'tidak ada',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    widget.itemUnit['category']?['name'] ?? '',
+                                    style: TextStyle(color: Colors.grey[700]),
+                                  ),
+                                  const SizedBox(height: 4),
                                   Container(
                                     decoration: BoxDecoration(
-                                      color: Color(0x484488B7),
-                                      borderRadius: BorderRadius.circular(10),
+                                      color: const Color(0xFFEEF5FB),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
                                     child: Text(
-                                      '${widget.itemUnit['kategori'] ?? 'tidak ada'}',
-                                      style: TextStyle(
-                                          color: Color(0xFF4488B7),
-                                          fontSize: 15),
+                                      widget.itemUnit['kategori'] ??
+                                          'tidak ada',
+                                      style: const TextStyle(
+                                        color: Color(0xFF4488B7),
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                              Text(
-                                  '${widget.itemUnit['category']['name'] ?? 'tidak ada'}'),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-
-              SizedBox(height: 20),
-
-              // Form input
+              const SizedBox(height: 24),
+              const Divider(),
+              const SizedBox(height: 8),
+              const Text(
+                'Form Peminjaman',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
                       controller: _reasonController,
-                      decoration: InputDecoration(labelText: 'Reason'),
+                      decoration: const InputDecoration(
+                        labelText: 'Alasan Peminjaman',
+                        border: OutlineInputBorder(),
+                      ),
                       validator: (value) =>
                           value!.isEmpty ? 'Wajib diisi' : null,
                     ),
+                    const SizedBox(height: 12),
                     TextField(
                       controller: _dateController,
                       readOnly: true,
-                      decoration: InputDecoration(labelText: 'Tanggal'),
+                      decoration: const InputDecoration(
+                        labelText: 'Tanggal Pengembalian',
+                        border: OutlineInputBorder(),
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
                       onTap: _pickDate,
                     ),
+                    const SizedBox(height: 12),
                     TextField(
                       controller: _timeController,
                       readOnly: true,
-                      decoration:
-                          InputDecoration(labelText: 'Waktu Pengembalian'),
+                      decoration: const InputDecoration(
+                        labelText: 'Waktu Pengembalian',
+                        border: OutlineInputBorder(),
+                        suffixIcon: Icon(Icons.access_time),
+                      ),
                       onTap: _pickTime,
                     ),
-                    TextFormField(
-                      controller: _idBarangController,
-                      decoration: InputDecoration(labelText: 'Barang'),
-                      readOnly: true,
+                    const SizedBox(height: 12),
+                    Visibility(
+                      visible: false, // tetap disembunyikan
+                      child: TextFormField(
+                        controller: _idBarangController,
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          labelText: 'ID Barang',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
                     ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _submitForm,
-                      child: Text("Kirim"),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: _submitForm,
+                        icon: const Icon(Icons.send),
+                        label: const Text("Kirim Pengajuan"),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

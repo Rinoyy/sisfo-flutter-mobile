@@ -64,7 +64,7 @@ class DetailPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('${itemUnit.category.name}',
+                        Text('${itemUnit.category?.name ?? 'Unknown Category'}',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         Container(
                           child: Center(
@@ -116,8 +116,9 @@ class DetailPage extends StatelessWidget {
                         'id': itemUnit.id,
                         'name': 'Halo',
                         'stock': 10,
-                        'kategori':itemUnit.category.name,
-                        'codeUnit':itemUnit.codeUnit,
+                        'kategori':
+                            itemUnit.category.name ?? 'Unknown Category',
+                        'codeUnit': itemUnit.codeUnit,
                       }
                     ]),
                   ),
@@ -162,7 +163,7 @@ class DetailPage extends StatelessWidget {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('${itemUnit.item.name}'),
+                                      Text('${itemUnit.item.name ?? 'unknow'}'),
                                       Text("IN-001"),
                                     ],
                                   ),
