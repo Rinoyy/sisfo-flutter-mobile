@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiAuth {
   static const _baseUrl = 'http://localhost:5000';
+  // static const _baseUrl = 'http://192.168.43.67:5000';
   // static const _baseUrl = 'http://10.0.2.2:5000';
 
   static Future<String?> login(String nipd, String password) async {

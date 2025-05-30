@@ -26,4 +26,17 @@ class Peminjaman {
       idUser: json['id_user'] as int,
     );
   }
+
+  Map<String, dynamic> toJson() {
+  return {
+    'id': id,
+    'loan_date': loanDate.toIso8601String(),
+    'return_date': returnDate.toIso8601String(),
+    'reason': reason,
+    'status': status,
+    'id_user': idUser,
+    'loanDetails': [], // kosong, karena data ini tidak tersedia di model ini
+  };
+}
+
 }

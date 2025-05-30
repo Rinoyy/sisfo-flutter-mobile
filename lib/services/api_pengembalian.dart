@@ -14,6 +14,7 @@ class ApiService {
 
     final response = await http.get(
       Uri.parse('http://localhost:5000/api/returns'),
+      // Uri.parse('http://10.0.2.2:5000/api/returns'),
       headers: {
         'Authorization': 'Bearer $token',  // Kirim token di header
       },
@@ -22,18 +23,18 @@ class ApiService {
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
 
-      print('Respons JSON: $jsonResponse');
+      // print('Respons JSON: $jsonResponse');
 
       final List<dynamic> dataList = jsonResponse['data'];
 
-      for (var item in dataList) {
-        print('Item: $item');
-      }
+      // for (var item in dataList) {
+      //   print('Item: $item');
+      // }
 
       return dataList.map((json) => Pengembalian.fromJson(json)).toList();
     } else {
-      print('Status code: ${response.statusCode}');
-      print('Body: ${response.body}');
+      // print('Status code: ${response.statusCode}');
+      // print('Body: ${response.body}');
       throw Exception('Gagal mengambil data pengembalian');
     }
   }

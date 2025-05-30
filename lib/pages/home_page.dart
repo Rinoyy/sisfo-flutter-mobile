@@ -27,7 +27,8 @@ class _HomePageState extends State<HomePage> {
     futureItems.then((items) {
       setState(() {
         allItems = items;
-        displayedItems = allItems;
+        // Filter supaya hanya yang statusBorrowing == false
+        displayedItems = allItems.where((item) => item.statusBorrowing == false).toList();
       });
     });
 
@@ -47,7 +48,8 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       displayedItems = allItems.where((item) {
         final name = item.name.toLowerCase();
-        return name.contains(query);
+        // Cek nama cocok dan statusBorrowing == false
+        return name.contains(query) && item.statusBorrowing == false;
       }).toList();
     });
   }
@@ -55,6 +57,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    const String baseUrl = 'http://localhost:5000/uploads/';
 
     return Scaffold(
       body: SafeArea(
@@ -85,8 +88,8 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                          color: const Color(0xFFDDD9D9), width: 2),
+                      border:
+                          Border.all(color: const Color(0xFFDDD9D9), width: 2),
                     ),
                     child: TextField(
                       controller: searchController,
@@ -101,7 +104,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
             Expanded(
               child: FutureBuilder<List<ItemUnit>>(
@@ -156,11 +158,14 @@ class _HomePageState extends State<HomePage> {
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: Image.asset(
-                                      'assets/images/tb.png',
+                                    child: Image.network(
+                                      baseUrl + item.image,
                                       height: 100,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
+                                      errorBuilder: (context, error,
+                                              stackTrace) =>
+                                          const Icon(Icons.broken_image),
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -179,8 +184,7 @@ class _HomePageState extends State<HomePage> {
                                     item.statusBorrowing
                                         ? 'Dipinjam'
                                         : 'Tersedia',
-                                    style:
-                                        const TextStyle(color: Colors.grey),
+                                    style: const TextStyle(color: Colors.grey),
                                   ),
                                 ],
                               ),

@@ -14,26 +14,65 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController nipdController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _isLoading = false;
 
   Future<void> _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     final nipd = nipdController.text;
     final password = passwordController.text;
 
-    final token =
-        await ApiAuth.login(nipd, password); // pastikan apiService terdefinisi
+    try {
+      // Jalankan login dan delay bersamaan
+      final results = await Future.wait([
+        ApiAuth.login(nipd, password),
+        Future.delayed(const Duration(seconds: 1)), // delay 1 detik
+      ]);
 
-    if (token != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('jwt_token', token);
+      final token = results[0] as String?;
 
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const MainPage()),
-        (route) => false,
-      );
-    } else {
+      if (!mounted) return;
+
+      if (token != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('jwt_token', token);
+
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const MainPage()),
+          (route) => false,
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Login Gagal'),
+              content:
+                  const Text('NIPD atau Password salah. Silakan coba lagi.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Tutup dialog
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login gagal')),
+        const SnackBar(content: Text('Terjadi kesalahan jaringan.')),
       );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -42,6 +81,13 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
         // appBar: AppBar(title: const Text('Login')),
         body: Stack(children: [
+      if (_isLoading)
+        Container(
+          color: Colors.black.withOpacity(0.5),
+          child: const Center(
+            child: CircularProgressIndicator(color: Colors.white),
+          ),
+        ),
       SizedBox.expand(
           child: ImageFiltered(
         imageFilter: ImageFilter.blur(sigmaX: 1, sigmaY: 2),
@@ -103,11 +149,22 @@ class _LoginPageState extends State<LoginPage> {
                     height: 45,
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: ElevatedButton(
+                      onPressed: _isLoading ? null : _handleLogin,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
                       ),
-                        onPressed: _handleLogin, child: const Text('Login')),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text('Login'),
+                    ),
                   )
                 ],
               ),

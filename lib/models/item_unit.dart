@@ -11,6 +11,7 @@ class ItemUnit {
   final String name;
   final ItemDetail item;
   final ItemCategory category;
+  final String image;
 
   ItemUnit({
     required this.id,
@@ -22,6 +23,7 @@ class ItemUnit {
     required this.name,
     required this.item,
     required this.category,
+    required this.image
   });
 
   factory ItemUnit.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,7 @@ class ItemUnit {
       // Hanya parse item dan category jika ada dalam JSON
       item: ItemDetail.fromJson(json['item']),
       category: ItemCategory.fromJson(json['category']),
+      image: json['image'] ?? '',
     );
   }
 
@@ -51,6 +54,7 @@ class ItemUnit {
       statusBorrowing: json['status_borrowing'],
       item: ItemDetail.fromJson(json['item']),
       category: ItemCategory.fromJson(json['category']),
+      image: json['image'] ?? '',
     );
   }
 }

@@ -14,6 +14,7 @@ class ApiKeranjang {
 
     final response = await http.get(
       Uri.parse('http://localhost:5000/api/keranjang'),
+      // Uri.parse('http://10.0.2.2:5000/api/keranjang'),
       headers: {
         'Authorization': 'Bearer $token', // Kirim token di header
       },
@@ -23,7 +24,7 @@ class ApiKeranjang {
       final jsonResponse = jsonDecode(response.body);
       final List<dynamic> dataList = jsonResponse['data'];
 
-      print(dataList);
+      // print(dataList);
 
       return dataList.map((item) => KeranjangItem.fromJson(item)).toList();
     } else {

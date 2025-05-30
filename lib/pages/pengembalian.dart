@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../services/api_pengembalian.dart';
-import '../models/pengembalian.dart';
+import '../services/loan_service.dart';
+import '../models/loan.dart';
+import '../models/peminjaman.dart'; // karena kita perlu akses toJson()
+
+import 'detailPengembalian.dart';
 
 class PengembalianPage extends StatefulWidget {
   const PengembalianPage({super.key});
@@ -10,18 +13,22 @@ class PengembalianPage extends StatefulWidget {
 }
 
 class _PengembalianPageState extends State<PengembalianPage> {
-  final ApiService pengembalianService = ApiService();
+  final LoanService pengembalianService = LoanService();
+
+  Future<List<Loan>> _fetchLoanData() async {
+    final peminjamanList = await pengembalianService.fetchPeminjaman();
+    return peminjamanList.map((e) => Loan.fromJson(e.toJson())).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Center(
-          child: Text("Pengembalian", style: TextStyle(fontSize: 20)),
-        ),
+            child: Text("Pengembalian", style: TextStyle(fontSize: 20))),
       ),
-      body: FutureBuilder<List<Pengembalian>>(
-        future: pengembalianService.fetchPengembalian(),
+      body: FutureBuilder<List<Loan>>(
+        future: _fetchLoanData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -34,52 +41,36 @@ class _PengembalianPageState extends State<PengembalianPage> {
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('Data kosong'));
           }
-          final data = snapshot.data!.where((item) {
-            final status = item.status.trim().toUpperCase();
-            return status == 'DIPINJAM' || status == 'PENGAJUAN_PENGEMBALIAN' || status == 'DIPINJAM';
-          }).toList();
 
-          if (data.isEmpty) {
-            return const Center(
-              child: Text(
-                'Tidak ada peminjaman aktif atau pengajuan pengembalian.',
-                style: TextStyle(fontSize: 16),
-              ),
-            );
+          final data = snapshot.data!;
+
+          // Filter agar tidak menampilkan status DITOLAK dan SELESAI
+          final filteredData = data.where((loan) =>
+              loan.status != 'DITOLAK' && loan.status != 'SELESAI').toList();
+
+          if (filteredData.isEmpty) {
+            return const Center(child: Text('Data kosong'));
           }
-          // final data = snapshot.data!;
 
           return ListView.builder(
-            itemCount: data.length,
+            itemCount: filteredData.length,
             itemBuilder: (context, index) {
-              final item = data[index];
+              final item = filteredData[index];
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                child: Row(
-                  children: [
-                    const SizedBox(width: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        'assets/images/tb.png',
-                        width: 130,
-                        height: 90,
+                child: ListTile(
+                  leading: const Icon(Icons.assignment_return),
+                  title: Text(
+                      'Tanggal Kembali: ${item.returnDate.toLocal().toString().split(' ')[0]}'),
+                  subtitle: Text('Status: ${item.status ?? "Tidak ada alasan"}'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailPengembalian(loan: item),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Status: ${item.status}'),
-                            Text('Tanggal Kembali: ${item.returnDate}'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               );
             },

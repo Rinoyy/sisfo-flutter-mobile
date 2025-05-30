@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/item_unit.dart';
 import '../pages/peminjaman_page.dart';
-import '../pages/peminjaman_page.dart';
 import '../pages/keranjang.dart';
 
 class DetailPage extends StatelessWidget {
@@ -11,6 +10,8 @@ class DetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const String baseUrl = 'http://localhost:5000/uploads/';
+
     return Scaffold(
       appBar: AppBar(title: Text('Detail Barang')),
       body: SingleChildScrollView(
@@ -24,11 +25,15 @@ class DetailPage extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        'assets/images/tb.png',
+                      child: Image.network(
+                        baseUrl +
+                            itemUnit
+                                .image, // Misal gambar ada di item.item.image
                         height: 180,
-                        width: 350,
+                        width: 210,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Icon(Icons.broken_image), // jika gagal load
                       ),
                     )
                   ],
