@@ -38,9 +38,9 @@ class KeranjangItem {
   factory KeranjangItem.fromJson(Map<String, dynamic> json) {
     return KeranjangItem(
       id: json['id'],
-      idUser: json['id_user'],
-      idItemsUnit: json['id_items_unit'],
-      itemUnit: ItemUnit.fromKeranjangJson(json['itemUnit']), // Gunakan factory khusus
+      idUser: json['userId'], // perbaiki key-nya
+      idItemsUnit: json['itemUnitId'], // perbaiki key-nya
+      itemUnit: ItemUnit.fromKeranjangJson(json['itemUnit']),
     );
   }
 }

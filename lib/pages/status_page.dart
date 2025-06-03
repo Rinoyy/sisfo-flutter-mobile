@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/peminjaman.dart';
 import '../services/loan_service.dart';
+import 'detailPengembalian.dart';
+
 
 class StatusPage extends StatefulWidget {
   const StatusPage({super.key});
@@ -166,7 +168,13 @@ class _StatusPageState extends State<StatusPage> {
                           return Card(
                             child: InkWell(
                               onTap: () {
-                                // Navigasi ke halaman detail
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailPengembalian(peminjaman: loan),
+                                  ),
+                                );
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

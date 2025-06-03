@@ -12,11 +12,10 @@ class ApiService {
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
       final itemResult = ItemUnitResult.fromJson(jsonResponse);
+
       return itemResult.data;
     } else {
       throw Exception('Failed to load item units');
     }
   }
 }
-
-

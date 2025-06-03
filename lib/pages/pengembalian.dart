@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../models/pengembalian.dart';
 import '../services/loan_service.dart';
-import '../models/loan.dart';
 import '../models/peminjaman.dart'; // karena kita perlu akses toJson()
 
 import 'detailPengembalian.dart';
@@ -15,38 +15,31 @@ class PengembalianPage extends StatefulWidget {
 class _PengembalianPageState extends State<PengembalianPage> {
   final LoanService pengembalianService = LoanService();
 
-  Future<List<Loan>> _fetchLoanData() async {
-    final peminjamanList = await pengembalianService.fetchPeminjaman();
-    return peminjamanList.map((e) => Loan.fromJson(e.toJson())).toList();
+  Future<List<Peminjaman>> _fetchLoanData() async {
+    return await pengembalianService.fetchPeminjaman();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-            child: Text("Pengembalian", style: TextStyle(fontSize: 20))),
+        title: const Center(child: Text("Pengembalian", style: TextStyle(fontSize: 20))),
       ),
-      body: FutureBuilder<List<Loan>>(
+      body: FutureBuilder<List<Peminjaman>>(
         future: _fetchLoanData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('Data kosong'));
           }
 
           final data = snapshot.data!;
-
-          // Filter agar tidak menampilkan status DITOLAK dan SELESAI
-          final filteredData = data.where((loan) =>
-              loan.status != 'DITOLAK' && loan.status != 'SELESAI').toList();
+          final filteredData = data.where((loan) => loan.status != 'DITOLAK' && loan.status != 'SELESAI').toList();
 
           if (filteredData.isEmpty) {
             return const Center(child: Text('Data kosong'));
@@ -60,14 +53,13 @@ class _PengembalianPageState extends State<PengembalianPage> {
                 margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                 child: ListTile(
                   leading: const Icon(Icons.assignment_return),
-                  title: Text(
-                      'Tanggal Kembali: ${item.returnDate.toLocal().toString().split(' ')[0]}'),
+                  title: Text('Tanggal Kembali: ${item.returnDate.toLocal().toString().split(' ')[0]}'),
                   subtitle: Text('Status: ${item.status ?? "Tidak ada alasan"}'),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DetailPengembalian(loan: item),
+                        builder: (context) => DetailPengembalian(peminjaman: item),
                       ),
                     );
                   },

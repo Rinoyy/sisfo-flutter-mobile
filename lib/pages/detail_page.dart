@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/item_unit.dart';
 import '../pages/peminjaman_page.dart';
 import '../pages/keranjang.dart';
+import '../services/api_keranjang.dart';
 
 class DetailPage extends StatelessWidget {
   final ItemUnit itemUnit;
@@ -27,8 +28,8 @@ class DetailPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                       child: Image.network(
                         baseUrl +
-                            itemUnit
-                                .image, // Misal gambar ada di item.item.image
+                            (itemUnit.image ??
+                                ''), // Misal gambar ada di item.item.image
                         height: 180,
                         width: 210,
                         fit: BoxFit.cover,
@@ -140,99 +141,32 @@ class DetailPage extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             OutlinedButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(20)),
+              onPressed: () async {
+                print('Klik tombol tambah keranjang');
+                bool success =
+                    await ApiKeranjang().tambahKeranjang(itemUnit.id);
+                Navigator.pop(context); // tutup bottom sheet setelah klik
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(success
+                        ? 'Berhasil tambah ke keranjang!'
+                        : 'Gagal tambah ke keranjang'),
                   ),
-                  builder: (context) {
-                    return Container(
-                        padding: const EdgeInsets.all(16),
-                        width: 400,
-                        height: 400,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Row(
-                              children: [
-                                SizedBox(width: 20),
-                                Image.asset(
-                                  'assets/images/tb.png',
-                                  width: 150,
-                                ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('${itemUnit.item.name ?? 'unknow'}'),
-                                      Text("IN-001"),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            const Divider(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                PeminjamanPage(
-                                                    itemUnit: itemUnit)));
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF4488B7),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  child: const Text('Pinjam barang'),
-                                ),
-                                OutlinedButton(
-                                    onPressed: () {},
-                                    style: OutlinedButton.styleFrom(
-                                      side: const BorderSide(
-                                          color: Color(0xFF4488B7)),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 12),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                    child: Text("tambah keranjang"))
-                              ],
-                            ),
-                          ],
-                        ));
-                  },
                 );
               },
               style: OutlinedButton.styleFrom(
-                minimumSize: const Size(150, 50),
                 side: const BorderSide(color: Color(0xFF4488B7)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: ElevatedButton(
-                child: Text("tambah keranjang"),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => KeranjangPage()));
-                },
+              child: const Text(
+                'Tambah Keranjang',
+                style: TextStyle(color: Color(0xFF4488B7)),
               ),
-            )
+            ),
           ],
         ),
       ),

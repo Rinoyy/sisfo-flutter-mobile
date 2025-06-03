@@ -5,7 +5,7 @@ class Pengembalian {
   final int? idAchiver;
   final int itemCondition;
   final DateTime returnDate;
-  final int idUser;
+  final int userId;
   final String status;
   final int? locationId;
   final Loan? loan;
@@ -16,7 +16,7 @@ class Pengembalian {
     this.idAchiver,
     required this.itemCondition,
     required this.returnDate,
-    required this.idUser,
+    required this.userId,
     required this.status,
     this.locationId,
     this.loan,
@@ -25,13 +25,13 @@ class Pengembalian {
   factory Pengembalian.fromJson(Map<String, dynamic> json) {
     return Pengembalian(
       id: json['id'],
-      borrowingId: json['borrowing_id'],
-      idAchiver: json['id_achiver'],
-      itemCondition: json['item_condition'],
-      returnDate: DateTime.parse(json['return_date']),
-      idUser: json['id_user'],
+      borrowingId: json['borrowingId'],
+      idAchiver: json['idAchiver'],
+      itemCondition: json['itemCondition'],
+      returnDate: DateTime.parse(json['returnDate']),
+      userId: json['userId'],
       status: json['status'],
-      locationId: json['location_id'],
+      locationId: json['locationId'],
       loan: json['loan'] != null ? Loan.fromJson(json['loan']) : null,
     );
   }

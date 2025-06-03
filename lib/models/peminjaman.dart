@@ -1,11 +1,13 @@
+import 'LoanDetail.dart';
+
 class Peminjaman {
   final int id;
   final DateTime loanDate;
   final DateTime returnDate;
   final String reason;
   final String status;
-  final int idUser;
-  // Tambahkan properti lain yang kamu butuhkan, misal loanDetails dll.
+  final int userId;
+  final List<LoanDetail> loanDetails; // tambahkan ini
 
   Peminjaman({
     required this.id,
@@ -13,30 +15,34 @@ class Peminjaman {
     required this.returnDate,
     required this.reason,
     required this.status,
-    required this.idUser,
+    required this.userId,
+    required this.loanDetails,
   });
 
   factory Peminjaman.fromJson(Map<String, dynamic> json) {
+    var loanDetailsJson = json['loanDetails'] as List<dynamic>? ?? [];
+    List<LoanDetail> loanDetailsList = loanDetailsJson.map((e) => LoanDetail.fromJson(e)).toList();
+
     return Peminjaman(
-      id: json['id'] as int,
-      loanDate: DateTime.parse(json['loan_date']),
-      returnDate: DateTime.parse(json['return_date']),
-      reason: json['reason'] as String,
-      status: json['status'] as String,
-      idUser: json['id_user'] as int,
+      id: json['id'],
+      loanDate: DateTime.parse(json['loanDate']),
+      returnDate: DateTime.parse(json['returnDate']),
+      reason: json['reason'] ?? '',
+      status: json['status'] ?? '',
+      userId: json['userId'] ?? json['id_user'],
+      loanDetails: loanDetailsList,
     );
   }
 
   Map<String, dynamic> toJson() {
-  return {
-    'id': id,
-    'loan_date': loanDate.toIso8601String(),
-    'return_date': returnDate.toIso8601String(),
-    'reason': reason,
-    'status': status,
-    'id_user': idUser,
-    'loanDetails': [], // kosong, karena data ini tidak tersedia di model ini
-  };
-}
-
+    return {
+      'id': id,
+      'loanDate': loanDate.toIso8601String(),
+      'returnDate': returnDate.toIso8601String(),
+      'reason': reason,
+      'status': status,
+      'userId': userId,
+      'loanDetails': loanDetails.map((e) => e.toJson()).toList(),
+    };
+  }
 }

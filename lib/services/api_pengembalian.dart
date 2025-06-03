@@ -23,18 +23,14 @@ class ApiService {
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
 
-      // print('Respons JSON: $jsonResponse');
 
       final List<dynamic> dataList = jsonResponse['data'];
 
-      // for (var item in dataList) {
-      //   print('Item: $item');
-      // }
+   
 
       return dataList.map((json) => Pengembalian.fromJson(json)).toList();
     } else {
-      // print('Status code: ${response.statusCode}');
-      // print('Body: ${response.body}');
+ 
       throw Exception('Gagal mengambil data pengembalian');
     }
   }

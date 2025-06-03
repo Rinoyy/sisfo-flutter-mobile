@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/item_unit.dart';
 import '../services/api_service.dart';
 import '../pages/detail_page.dart';
+import '../pages/keranjang.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,7 +29,8 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         allItems = items;
         // Filter supaya hanya yang statusBorrowing == false
-        displayedItems = allItems.where((item) => item.statusBorrowing == false).toList();
+        displayedItems =
+            allItems.where((item) => item.statusBorrowing == false).toList();
       });
     });
 
@@ -76,10 +78,19 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Icon(Icons.menu, color: Colors.blue, size: 28),
-                      Icon(Icons.shopping_cart_outlined,
-                          color: Colors.blue, size: 28),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => KeranjangPage()),
+                          );
+                        },
+                        child: Icon(Icons.shopping_cart_outlined,
+                            color: Colors.blue, size: 28),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -159,13 +170,13 @@ class _HomePageState extends State<HomePage> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                     child: Image.network(
-                                      baseUrl + item.image,
+                                      baseUrl + (item.image ?? ''),
                                       height: 100,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (context, error,
-                                              stackTrace) =>
-                                          const Icon(Icons.broken_image),
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(Icons.broken_image),
                                     ),
                                   ),
                                   const SizedBox(height: 8),

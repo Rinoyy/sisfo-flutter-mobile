@@ -14,6 +14,7 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
   final _formKey = GlobalKey<FormState>();
   final _reasonController = TextEditingController();
   final _dateController = TextEditingController();
+  final _ReturnDateController = TextEditingController();
   final _timeController = TextEditingController();
   final _idBarangController = TextEditingController();
 
@@ -39,7 +40,7 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
     _idBarangController.text = _itemsId.join(', ');
   }
 
-  Future<void> _pickDate() async {
+  Future<void> _pickLoanDate() async {
     final picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -47,17 +48,20 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
       lastDate: DateTime(2100),
     );
     if (picked != null) {
-      _dateController.text = picked.toIso8601String();
+      _dateController.text =
+          picked.toIso8601String().split('T')[0]; // bisa format date saja
     }
   }
 
-  Future<void> _pickTime() async {
-    final picked = await showTimePicker(
+  Future<void> _pickReturnDate() async {
+    final picked = await showDatePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
     );
     if (picked != null) {
-      _timeController.text = picked.format(context);
+      _ReturnDateController.text = picked.toIso8601String().split('T')[0];
     }
   }
 
@@ -65,16 +69,18 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final reason = _reasonController.text;
-    final tanggal = _dateController.text;
+    final loanDate = _dateController.text;
+    final returnDare = _ReturnDateController.text;
     final jam = _timeController.text;
 
     final body = {
       "jam": jam,
-      "return_date": tanggal,
+      "returnDate": loanDate,
+      "loanDate": returnDare,
       "reason": reason,
       "status": "PENGAJUAN",
-      "items_id": _itemsId,
-      "id_user": 1
+      "itemId":_itemsId,
+      "userId": 1
     };
 
     try {
@@ -222,22 +228,22 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
                       controller: _dateController,
                       readOnly: true,
                       decoration: const InputDecoration(
+                        labelText: 'Tanggal Peminjaman',
+                        border: OutlineInputBorder(),
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
+                      onTap: _pickLoanDate,
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _ReturnDateController,
+                      readOnly: true,
+                      decoration: const InputDecoration(
                         labelText: 'Tanggal Pengembalian',
                         border: OutlineInputBorder(),
                         suffixIcon: Icon(Icons.calendar_today),
                       ),
-                      onTap: _pickDate,
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _timeController,
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Waktu Pengembalian',
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.access_time),
-                      ),
-                      onTap: _pickTime,
+                      onTap: _pickReturnDate,
                     ),
                     const SizedBox(height: 12),
                     Visibility(

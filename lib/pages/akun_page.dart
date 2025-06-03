@@ -13,6 +13,7 @@ class _AkunPageState extends State<AkunPage> {
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token'); // hapus token
+    await prefs.remove('userId');
 
     // pindah ke halaman LoginPage dan hilangkan halaman sebelumnya
     Navigator.of(context).pushAndRemoveUntil(

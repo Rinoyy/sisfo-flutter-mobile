@@ -1,6 +1,5 @@
 import 'item_unit.dart';
 
-
 class LoanDetail {
   final int id;
   final int idLoan;
@@ -15,14 +14,22 @@ class LoanDetail {
   });
 
   factory LoanDetail.fromJson(Map<String, dynamic> json) {
+
     return LoanDetail(
       id: json['id'],
-      idLoan: json['id_loan'],
-      idItemUnit: json['id_item_unit'],
-      itemUnit: json['item_unit'] != null
-          ? ItemUnit.fromJson(json['item_unit'])
-          : null,
+      idLoan: json['loanId'],
+      idItemUnit: json['itemUnitId'],
+      itemUnit: json['itemUnit'] != null ? ItemUnit.fromJson(json['itemUnit']) : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'loanId': idLoan,
+      'itemUnitId': idItemUnit,
+      // 'itemUnit': itemUnit?.toJson(),
+    };
   }
 
   factory LoanDetail.empty() {
